@@ -4,35 +4,35 @@
 ## 1. Problem Statement
 Given an integer array `nums` and an integer `k`, return `true` if there are two distinct indices `i` and `j` in the array such that `nums[i] == nums[j]` and `abs(i - j) <= k`.
 
+## 2. Example Inputs
+
+- **Example 1:**
+    - Input: `nums = [1,2,3,1], k = 3`
+    - Output: `true`
+
+- **Example 2:**
+    - Input: `nums = [1,0,1,1], k = 1`
+    - Output: `true`
+
 ### Constraints
 - `1 <= nums.length <= 10^5`
 - `-10^9 <= nums[i] <= 10^9`
 - `0 <= k <= 10^5`
 
-## 2. Example Inputs
-
-- **Example 1:**
-    - Input: `nums = [1, 2, 3, 1]`, `k = 3`
-    - Output: `true`
-
-- **Example 2:**
-    - Input: `nums = [1, 0, 1, 1]`, `k = 1`
-    - Output: `true`
-
 ## 3. Brute Force Approach
 
 ### a. Approach
-The brute force approach involves checking all possible pairs of elements in `nums` to determine if there exists a pair of indices `(i, j)` such that `nums[i] == nums[j]` and `|i - j| <= k`. This approach iterates over each element and checks every subsequent element within range `k`.
+The brute force approach involves comparing each element with every other element within the given distance `k`. We iterate over each index and for each index, check all other indices up to `k` steps away.
 
 ### b. Steps
-1. Start from the first element in `nums`.
-2. For each element, check each subsequent element up to `k` indices ahead.
-3. If `nums[i] == nums[j]` and `|i - j| <= k`, return `true`.
-4. If no such pair is found after checking all elements, return `false`.
+1. Iterate through the array with a nested loop.
+2. For each element at index `i`, check the elements at indices from `i+1` to `i+k`.
+3. If any of these elements is equal to `nums[i]`, return `true`.
+4. If no such elements are found, return `false`.
 
 ### c. Time & Space Complexity
 - **Time Complexity**: `O(n * k)`
-- **Space Complexity**: `O(1)` (no additional space used)
+- **Space Complexity**: `O(1)`
 
 ### d. Code Snippet
 ```javascript
@@ -49,52 +49,55 @@ function containsNearbyDuplicate(nums, k) {
 ```
 
 ### e. Dry Run
-- Input: `nums = [1, 2, 3, 1]`, `k = 3`
+- Input: `nums = [1, 2, 3, 1], k = 3`
 - Steps:
-  1. `i = 0`: `nums[0] = 1`
-     - `j = 1`: `nums[1] = 2` (not equal)
-     - `j = 2`: `nums[2] = 3` (not equal)
-     - `j = 3`: `nums[3] = 1` (equal and `|3 - 0| = 3 <= k`)
-  2. **Result: true**
+  - i=0, j=1,2,3: finds `nums[0] == nums[3]` → returns `true`.
 
-## 4. Efficient Approach
+## 4. Efficient Approach (Sliding Window)
 
 ### a. Approach
-An efficient way to solve this problem is by using a HashMap to store the index of each element. As we iterate through `nums`, we check if the current element exists in the HashMap and if the difference in indices is within the range `k`.
+Using a sliding window with a set, we can maintain only the last `k` elements in a window to check for duplicates efficiently. As we slide the window, we add the new element and remove the element that is now out of range.
 
 ### b. Steps
-1. Initialize an empty HashMap.
-2. For each element `nums[i]`, check if it exists in the HashMap and if `|i - index| <= k`.
-3. If so, return `true`.
-4. If not, update the element's index in the HashMap and continue.
-5. If no such pair is found, return `false`.
+1. Initialize an empty set to store elements within the current window.
+2. Traverse the array:
+   - Check if the current element already exists in the set. If it does, return `true`.
+   - Add the current element to the set.
+   - If the set size exceeds `k`, remove the element at `i-k` to maintain the window size.
+3. If no duplicates are found within range `k`, return `false`.
 
 ### c. Time & Space Complexity
-- **Time Complexity**: `O(n)`
-- **Space Complexity**: `O(min(n, k))`
+- **Time Complexity**: `O(n)` (due to set operations which are `O(1)` on average)
+- **Space Complexity**: `O(k)` (to maintain the set of `k` elements)
 
 ### d. Code Snippet
 ```javascript
 function containsNearbyDuplicate(nums, k) {
-    const map = new Map();
+    const windowSet = new Set();
+
     for (let i = 0; i < nums.length; i++) {
-        if (map.has(nums[i]) && i - map.get(nums[i]) <= k) {
+        if (windowSet.has(nums[i])) {
             return true;
         }
-        map.set(nums[i], i);
+        windowSet.add(nums[i]);
+        if (windowSet.size > k) {
+            windowSet.delete(nums[i - k]);
+        }
     }
+
     return false;
 }
 ```
 
 ### e. Dry Run
-- Input: `nums = [1, 2, 3, 1]`, `k = 3`
+- Input: `nums = [1,2,3,1], k = 3`
 - Steps:
-  1. `i = 0`: `nums[0] = 1`, store `map = {1: 0}`
-  2. `i = 1`: `nums[1] = 2`, store `map = {1: 0, 2: 1}`
-  3. `i = 2`: `nums[2] = 3`, store `map = {1: 0, 2: 1, 3: 2}`
-  4. `i = 3`: `nums[3] = 1` exists in `map`, `|3 - 0| = 3 <= k`
-  5. **Result: true**
+  1. i=0: Add `1` to set.
+  2. i=1: Add `2` to set.
+  3. i=2: Add `3` to set.
+  4. i=3: `1` is already in the set → returns `true`.
+
+## 5. Complexity Analysis
 
 ### a. Brute Force Time & Space
 - **Time Complexity**: `O(n * k)`
@@ -102,7 +105,7 @@ function containsNearbyDuplicate(nums, k) {
 
 ### b. Optimized Time & Space
 - **Time Complexity**: `O(n)`
-- **Space Complexity**: `O(min(n, k))`
+- **Space Complexity**: `O(k)`
 
-## 5. Conclusion
-The brute force approach is straightforward but inefficient for large inputs due to its `O(n * k)` complexity. The optimized approach using a HashMap allows for an efficient `O(n)` solution by storing previously encountered indices, making it suitable for large arrays.
+## 6. Conclusion
+The brute force approach is feasible for small inputs but becomes inefficient for large inputs due to its `O(n * k)` time complexity. The optimized approach using a sliding window and set allows us to check for nearby duplicates within `O(n)` time, making it much more efficient for large arrays.
