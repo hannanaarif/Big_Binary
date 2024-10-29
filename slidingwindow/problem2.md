@@ -85,38 +85,38 @@ function generateSubsequences(nums) {
      - Max = 3, Min = 2, Difference = 1, Length = 5 (update maxLength).
   3. Final Result: Length = 5.
 
-## 4. Efficient Approach
+## 4. Efficient Approach (Sliding Window)
 
 ### a. Approach
-An efficient approach is to use a frequency map to count occurrences of each number in `nums`. Then, for each unique number, check the length of the harmonious subsequence formed by that number and the number that is exactly one greater.
+Using a sliding window, we can look for harmonious subsequences by moving a window across the sorted array. This ensures that any harmonious subsequence found has adjacent elements differing by at most 1.
 
 ### b. Steps
-1. Create a frequency map of the elements in `nums`.
-2. For each unique number, check if the number plus one exists in the map.
-3. If it exists, calculate the length of the harmonious subsequence as the sum of the counts of the two numbers.
-4. Keep track of the maximum length found.
-5. Return the maximum length of the harmonious subsequence.
+1. Sort the array `nums`.
+2. Use two pointers (`start` and `end`) to create a window.
+3. Expand the window by moving the `end` pointer until the difference between `nums[end]` and `nums[start]` is greater than 1.
+4. When the difference becomes greater than 1, move the `start` pointer to maintain a harmonious window.
+5. Track the maximum length of harmonious subsequences found in each window.
 
 ### c. Time & Space Complexity
-- **Time Complexity**: `O(n)` (one pass to count and another to check pairs)
-- **Space Complexity**: `O(n)` (for the frequency map)
+- **Time Complexity**: `O(n log n)` (sorting)
+- **Space Complexity**: `O(1)`
 
 ### d. Code Snippet
 ```javascript
 function findLHS(nums) {
-    const frequency = new Map();
+    nums.sort((a, b) => a - b);
+    let start = 0;
     let maxLength = 0;
-    
-    for (const num of nums) {
-        frequency.set(num, (frequency.get(num) || 0) + 1);
-    }
-    
-    for (const [key, count] of frequency) {
-        if (frequency.has(key + 1)) {
-            maxLength = Math.max(maxLength, count + frequency.get(key + 1));
+
+    for (let end = 1; end < nums.length; end++) {
+        while (nums[end] - nums[start] > 1) {
+            start++;
+        }
+        if (nums[end] - nums[start] === 1) {
+            maxLength = Math.max(maxLength, end - start + 1);
         }
     }
-    
+
     return maxLength;
 }
 ```
@@ -124,9 +124,8 @@ function findLHS(nums) {
 ### e. Dry Run
 - Input: `nums = [1, 3, 2, 2, 5, 2, 3, 7]`
 - Steps:
-  1. Create frequency map: `{1: 2, 2: 3, 3: 2, 4: 1, 5: 1}`.
-  2. Check for each key: 
-     - For `2`: `count = 3`, `key + 1 = 3`: `3 + 2 = 5` (update maxLength).
+  1. Sort `nums` to get `[1, 2, 2, 2, 3, 3, 5, 7]`.
+  2. Slide window: check subsequences `[2, 2, 2, 3]` and `[3, 2, 2, 2, 3]`.
   3. Final Result: Length = 5.
 
 ## 5. Complexity Analysis
@@ -136,8 +135,8 @@ function findLHS(nums) {
 - **Space Complexity**: `O(n)`
 
 ### b. Optimized Time & Space
-- **Time Complexity**: `O(n)`
-- **Space Complexity**: `O(n)`
+- **Time Complexity**: `O(n log n)`
+- **Space Complexity**: `O(1)`
 
 ## 6. Conclusion
-The brute force approach is impractical for larger arrays due to its exponential time complexity. The optimized approach using a frequency map efficiently calculates the length of the longest harmonious subsequence in linear time, making it suitable for larger inputs.
+The brute force approach is impractical for larger arrays due to its exponential time complexity. The optimized approach using a sliding window over a sorted array provides an efficient solution with a time complexity of `O(n log n)`, making it suitable for larger inputs.
