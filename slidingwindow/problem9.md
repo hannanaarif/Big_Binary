@@ -1,5 +1,5 @@
 
-# Problem Name: Minimum Recolors to Get K Consecutive Black Blocks Guide
+# Problem Name: Minimum Recolors to Get K Consecutive Black Blocks
 
 ## 1. Problem Statement
 You are given a 0-indexed string `blocks` of length `n`, where `blocks[i]` is either 'W' or 'B', representing the color of the i-th block. The characters 'W' and 'B' denote the colors white and black, respectively.
