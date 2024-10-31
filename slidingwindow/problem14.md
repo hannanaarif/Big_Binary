@@ -15,15 +15,18 @@ Every 3 contiguous tiles in the circle with alternating colors (where the middle
   - **Input**: colors = [1, 1, 1]
   - **Output**: 0
   - **Explanation**: 
+
   ![alt text](image-1.png)
 
 - **Example 2**:
   - **Input**: colors = [0, 1, 0, 0, 1]
   - **Output**: 3
   - **Explanation**: 
+
   ![alt text](image-2.png)
 
   *Alternating groups*
+  
   ![alt text](image-3.png)
 
 ## 3. Brute Force Approach
