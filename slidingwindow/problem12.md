@@ -2,7 +2,7 @@
 # Problem Name: Maximum Length Substring With Two Occurrences
 
 ## 1. Problem Statement
-Given a string `s`, return the maximum length of a substring such that it contains at most two occurrences of each character.
+Given a string `s`, return the **maximum** length of a substring such that it contains at most two occurrences of each character.
 
 ## 2. Example Inputs
 - **Example 1**:
